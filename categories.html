@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Categories · Admin · AppVerse</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="../styles.css" />
+<link rel="stylesheet" href="../admin.css" />
+<script type="importmap">
+{ "imports": {
+  "firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+  "firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+  "firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js",
+  "firebase/functions":"https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js"
+}}
+</script>
+</head>
+<body class="admin-body">
+<aside class="admin-sidebar" id="adminSidebar">
+  <a class="brand" href="index.html"><span class="brand-mark"><i class="fa-solid fa-cube"></i></span><span class="brand-text">App<strong>Verse</strong></span></a>
+  <span class="admin-badge">ADMIN</span>
+  <nav class="admin-nav">
+    <a class="admin-link" href="index.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a class="admin-link" href="products.html"><i class="fa-solid fa-box"></i> Products</a>
+    <a class="admin-link" href="orders.html"><i class="fa-solid fa-receipt"></i> Orders</a>
+    <a class="admin-link" href="users.html"><i class="fa-solid fa-users"></i> Users</a>
+    <a class="admin-link is-active" href="categories.html"><i class="fa-solid fa-tags"></i> Categories</a>
+    <a class="admin-link" href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a>
+    <a class="admin-link admin-logout" href="#" id="adminLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+  </nav>
+  <div class="admin-user" id="adminUser"></div>
+</aside>
+
+<main class="admin-main">
+  <header class="admin-topbar">
+    <button class="icon-btn mobile-only" id="adminMenuToggle"><i class="fa-solid fa-bars"></i></button>
+    <h1>Categories</h1>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" id="newCategoryBtn"><i class="fa-solid fa-plus"></i> New category</button>
+  </header>
+
+  <section class="admin-content">
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Name</th><th>Slug</th><th>Active</th><th>Created</th><th></th></tr></thead>
+        <tbody id="catsTbody"></tbody>
+      </table>
+    </div>
+    <div class="admin-cards" id="catsCards"></div>
+  </section>
+</main>
+
+<div class="modal" id="categoryModal" hidden>
+  <div class="modal-backdrop" data-close="categoryModal"></div>
+  <div class="modal-panel">
+    <button class="modal-close" type="button" data-close="categoryModal"><i class="fa-solid fa-xmark"></i></button>
+    <h3 class="modal-title" id="categoryModalTitle"><i class="fa-solid fa-tag"></i> New category</h3>
+    <form id="categoryForm" novalidate>
+      <input type="hidden" id="cId" />
+      <div class="field">
+        <label for="cName">Name <span class="req">*</span></label>
+        <input id="cName" required maxlength="80" />
+        <small class="error" data-error-for="cName"></small>
+      </div>
+      <div class="field">
+        <label for="cSlug">Slug <span class="req">*</span></label>
+        <input id="cSlug" required maxlength="80" placeholder="business-tools" />
+        <small class="hint">Lowercase letters, numbers, dashes only.</small>
+        <small class="error" data-error-for="cSlug"></small>
+      </div>
+      <label class="switch"><input type="checkbox" id="cActive" checked /><span></span> Active</label>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close="categoryModal">Cancel</button>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="confirmModal" hidden>
+  <div class="modal-backdrop" data-close="confirmModal"></div>
+  <div class="modal-panel modal-sm">
+    <h3 id="confirmTitle" class="modal-title">Are you sure?</h3>
+    <p id="confirmMessage" class="muted"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" id="confirmCancel">Cancel</button>
+      <button class="btn btn-danger" type="button" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toasts" role="status" aria-live="polite"></div>
+<script type="module" src="../admin-settings.js"></script>
+</body>
+</html>

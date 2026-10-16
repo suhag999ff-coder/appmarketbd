@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Login · AppVerse</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="../styles.css" />
+<script type="importmap">
+{ "imports": {
+  "firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+  "firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+  "firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js",
+  "firebase/functions":"https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js"
+}}
+</script>
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+      <span class="brand-text">App<strong>Verse</strong></span>
+    </a>
+    <span class="admin-badge" style="margin-top:8px">ADMIN PORTAL</span>
+    <h1>Administrator sign in</h1>
+    <p class="sub">Only accounts authorized in <code>admins/{uid}</code> can access this panel.</p>
+
+    <div class="alert alert-info" id="denied" hidden>
+      <i class="fa-solid fa-lock"></i>
+      <div><strong>Access denied.</strong> Your account is signed in but not authorized as an administrator.</div>
+    </div>
+
+    <form id="adminLoginForm" novalidate>
+      <div class="field">
+        <label for="email">Admin email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+        <small class="error" data-error-for="email"></small>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required minlength="6" />
+        <small class="error" data-error-for="password"></small>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" type="submit" id="adminLoginBtn">
+        <i class="fa-solid fa-shield-halved"></i> Sign in to admin panel
+      </button>
+    </form>
+
+    <p class="auth-foot">
+      <a href="../login.html">← Back to storefront</a>
+    </p>
+  </div>
+</div>
+<div class="toast-stack" id="toasts" role="status" aria-live="polite"></div>
+<script type="module" src="../admin-auth.js"></script>
+</body>
+</html>

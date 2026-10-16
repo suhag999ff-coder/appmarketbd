@@ -1,0 +1,20 @@
+{
+  "name": "appverse-marketplace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AppVerse — professional Firebase + Vercel digital app marketplace with a secure admin dashboard.",
+  "type": "module",
+  "scripts": {
+    "serve": "npx --yes serve -l 5173 .",
+    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:all": "firebase deploy",
+    "lint:noop": "echo \"(no linter configured)\" && exit 0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": ["firebase", "marketplace", "vercel", "firestore"],
+  "license": "MIT"
+}
