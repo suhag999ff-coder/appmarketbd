@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in · AppVerse</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body style="padding-bottom:0">
+<div class="auth-wrap">
+  <div class="auth-card">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+      <span class="brand-text">App<strong>Verse</strong></span>
+    </a>
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to your AppVerse account</p>
+
+    <div class="alert alert-danger" id="errBox" hidden>
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <div id="errMsg"></div>
+    </div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" type="submit" id="submitBtn">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign in
+      </button>
+    </form>
+
+    <p style="text-align:center;margin-top:12px;font-size:0.85rem">
+      <a href="#" id="forgotBtn">Forgot password?</a>
+    </p>
+
+    <p class="auth-foot">
+      New here? <a href="register.html">Create account</a>
+    </p>
+  </div>
+</div>
+<div class="toast-stack" id="toasts"></div>
+<script type="module" src="auth.js"></script>
+</body>
+</html>

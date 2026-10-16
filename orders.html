@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Orders · AppVerse</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+      <span class="brand-text">App<strong>Verse</strong></span>
+    </a>
+    <div class="spacer"></div>
+    <a class="btn btn-ghost btn-sm" href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h2><i class="fa-solid fa-receipt"></i> My orders</h2></div>
+    <div id="ordersList"></div>
+    <div class="empty-state" id="ordersEmpty" hidden>
+      <i class="fa-regular fa-receipt"></i>
+      <h3>No orders yet</h3>
+      <p>Your orders will appear here.</p>
+      <a class="btn btn-primary" href="index.html" style="margin-top:12px">
+        <i class="fa-solid fa-compass"></i> Browse apps
+      </a>
+    </div>
+  </div>
+</section>
+
+<nav class="bottom-nav">
+  <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a href="index.html#browse"><i class="fa-solid fa-magnifying-glass"></i><span>Browse</span></a>
+  <a href="orders.html" class="active"><i class="fa-solid fa-receipt"></i><span>Orders</span></a>
+  <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+</nav>
+
+<div class="toast-stack" id="toasts"></div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  collection, query, where, orderBy, getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $ = (s) => document.querySelector(s);
+const money = (n) => (Number(n) || 0) > 0 ? "৳" + Number(n).toLocaleString("en-BD") : "Free";
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+})[c]);
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    location.href = "login.html?next=orders.html";
+    return;
+  }
+  const list = $("#ordersList");
+  list.innerHTML = `<div class="skeleton" style="height:120px;margin-bottom:12px"></div>
+                    <div class="skeleton" style="height:120px"></div>`;
+  try {
+    const snap = await getDocs(query(
+      collection(db, "orders"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    ));
+    list.innerHTML = "";
+    if (!snap.size) {
+      list.hidden = true;
+      $("#ordersEmpty").hidden = false;
+      return;
+    }
+    snap.forEach(d => {
+      const o = d.data();
+      const items = (o.items || []).map(i =>
+        `<div class="order-line"><span>${esc(i.name)} × ${i.qty}</span><span>${money((i.price || 0) * i.qty)}</span></div>`
+      ).join("");
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.innerHTML = `
+        <div class="order-head">
+          <div>
+            <div class="order-id">#${d.id.slice(0, 10)}</div>
+            <div class="muted small" style="margin-top:4px">
+              ${o.createdAt?.toDate?.().toLocaleString?.() || ""}
+            </div>
+          </div>
+          <span class="status status-${o.status || "pending"}">${o.status || "pending"}</span>
+        </div>
+        ${items}
+        <div class="order-total"><span>Total</span><span>${money(o.total)}</span></div>
+        ${o.paymentMethod ? `<div class="muted small" style="margin-top:6px">Payment: ${esc(o.paymentMethod)}${o.transactionReference ? ` · Ref: ${esc(o.transactionReference)}` : ""}</div>` : ""}
+      `;
+      list.appendChild(card);
+    });
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = `<div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i>
+      <div>Could not load orders. Please refresh.</div></div>`;
+  }
+});
+</script>
+</body>
+</html>

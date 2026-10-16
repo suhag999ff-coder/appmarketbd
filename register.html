@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Create Account · AppVerse</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body style="padding-bottom:0">
+<div class="auth-wrap">
+  <div class="auth-card">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+      <span class="brand-text">App<strong>Verse</strong></span>
+    </a>
+    <h1>Create account</h1>
+    <p class="sub">Join the marketplace in seconds</p>
+
+    <div class="alert alert-danger" id="errBox" hidden>
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <div id="errMsg"></div>
+    </div>
+
+    <form id="registerForm">
+      <div class="field">
+        <label for="name">Full name</label>
+        <input id="name" required minlength="2" maxlength="80" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" required minlength="6" autocomplete="new-password">
+        <small class="hint">At least 6 characters</small>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" type="submit" id="submitBtn">
+        <i class="fa-solid fa-user-plus"></i> Create account
+      </button>
+    </form>
+
+    <p class="auth-foot">
+      Already have an account? <a href="login.html">Sign in</a>
+    </p>
+  </div>
+</div>
+<div class="toast-stack" id="toasts"></div>
+<script type="module" src="auth.js"></script>
+</body>
+</html>

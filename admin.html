@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<title>Admin · AppVerse</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-body">
+
+<!-- SIDEBAR -->
+<aside class="admin-sidebar" id="adminSidebar">
+  <a class="brand" href="index.html">
+    <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+    <span class="brand-text">App<strong>Verse</strong></span>
+  </a>
+  <span class="admin-badge">ADMIN</span>
+  <nav class="admin-nav">
+    <button data-view="dashboard" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+    <button data-view="products"><i class="fa-solid fa-box"></i> Products</button>
+    <button data-view="orders"><i class="fa-solid fa-receipt"></i> Orders</button>
+    <button data-view="users"><i class="fa-solid fa-users"></i> Users</button>
+    <button data-view="settings"><i class="fa-solid fa-gear"></i> Settings</button>
+    <button id="adminLogout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+  </nav>
+</aside>
+<div class="admin-sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+<!-- TOP BAR -->
+<header class="admin-topbar">
+  <button class="admin-menu-btn" id="menuBtn" aria-label="Menu">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+  <h1 id="pageTitle">Dashboard</h1>
+  <span class="muted small" id="adminEmail" style="margin-right:8px"></span>
+</header>
+
+<!-- CONTENT -->
+<main class="admin-content">
+
+  <!-- Dashboard -->
+  <section data-view="dashboard" class="admin-view">
+    <div class="stat-grid" id="statGrid">
+      <div class="stat-card"><span class="stat-label">Loading</span><span class="stat-value">—</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2><i class="fa-solid fa-clock"></i> Recent orders</h2></div>
+      <div class="panel-body" id="recentOrders"></div>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section data-view="products" class="admin-view" hidden>
+    <div class="admin-toolbar">
+      <input id="productSearch" placeholder="Search products…" type="search">
+      <button class="btn btn-primary btn-sm" id="newProductBtn">
+        <i class="fa-solid fa-plus"></i> New product
+      </button>
+    </div>
+    <div class="panel">
+      <div id="productsList"></div>
+    </div>
+  </section>
+
+  <!-- Orders -->
+  <section data-view="orders" class="admin-view" hidden>
+    <div class="admin-toolbar">
+      <input id="orderSearch" placeholder="Search orders…" type="search">
+      <select id="orderStatusFilter">
+        <option value="">All statuses</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="panel">
+      <div id="ordersList"></div>
+    </div>
+  </section>
+
+  <!-- Users -->
+  <section data-view="users" class="admin-view" hidden>
+    <div class="panel">
+      <div id="usersList"></div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section data-view="settings" class="admin-view" hidden>
+    <div class="panel">
+      <div class="panel-head"><h2><i class="fa-solid fa-store"></i> Store settings</h2></div>
+      <div class="panel-body">
+        <form id="settingsForm">
+          <div class="field">
+            <label>Store name</label>
+            <input id="sStoreName" maxlength="80" value="AppVerse">
+          </div>
+          <div class="field">
+            <label>Support email</label>
+            <input id="sEmail" type="email" maxlength="120">
+          </div>
+          <div class="field">
+            <label>Support phone</label>
+            <input id="sPhone" maxlength="30">
+          </div>
+          <div class="field">
+            <label>bKash number</label>
+            <input id="sBkash" maxlength="30" placeholder="01XXXXXXXXX">
+          </div>
+          <div class="field">
+            <label>Nagad number</label>
+            <input id="sNagad" maxlength="30">
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">
+            <i class="fa-solid fa-floppy-disk"></i> Save settings
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- PRODUCT EDITOR MODAL -->
+<div class="modal" id="productModal" hidden>
+  <div class="modal-backdrop" data-close="productModal"></div>
+  <div class="modal-panel wide">
+    <button class="modal-close" data-close="productModal"><i class="fa-solid fa-xmark"></i></button>
+    <h3 class="modal-title" id="productModalTitle"><i class="fa-solid fa-box"></i> New product</h3>
+    <form id="productForm">
+      <input type="hidden" id="pId">
+      <div class="field">
+        <label>Name <span class="req">*</span></label>
+        <input id="pName" required maxlength="200">
+        <small class="error" data-err="pName"></small>
+      </div>
+      <div class="field">
+        <label>Category <span class="req">*</span></label>
+        <select id="pCategory" required><option value="">Select…</option></select>
+      </div>
+      <div class="field">
+        <label>Description <span class="req">*</span></label>
+        <textarea id="pDescription" required maxlength="4000" rows="4"></textarea>
+      </div>
+      <div class="field">
+        <label>Main image URL <span class="req">*</span></label>
+        <input id="pImageUrl" type="url" required placeholder="https://…">
+        <small class="hint">Must start with http:// or https://</small>
+        <small class="error" data-err="pImageUrl"></small>
+      </div>
+      <div class="field">
+        <label>Extra screenshot URLs (one per line)</label>
+        <textarea id="pScreenshots" rows="2" placeholder="https://…&#10;https://…"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field">
+          <label>Price (৳) <span class="req">*</span></label>
+          <input id="pPrice" type="number" min="0" step="0.01" required>
+        </div>
+        <div class="field">
+          <label>Original price (৳)</label>
+          <input id="pOriginalPrice" type="number" min="0" step="0.01">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field">
+          <label>Version</label>
+          <input id="pVersion" maxlength="30">
+        </div>
+        <div class="field">
+          <label>Product URL</label>
+          <input id="pProductUrl" type="url" placeholder="https://…">
+        </div>
+      </div>
+      <div class="row" style="gap:20px;margin:6px 0 14px">
+        <label class="switch"><input type="checkbox" id="pFeatured"><span class="track"></span> Featured</label>
+        <label class="switch"><input type="checkbox" id="pAvailable" checked><span class="track"></span> Available</label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close="productModal">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="saveProductBtn">
+          <i class="fa-solid fa-floppy-disk"></i> Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="modal" id="orderDetailModal" hidden>
+  <div class="modal-backdrop" data-close="orderDetailModal"></div>
+  <div class="modal-panel">
+    <button class="modal-close" data-close="orderDetailModal"><i class="fa-solid fa-xmark"></i></button>
+    <div id="orderDetailBody"></div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal" id="confirmModal" hidden>
+  <div class="modal-backdrop" data-close="confirmModal"></div>
+  <div class="modal-panel">
+    <h3 class="modal-title" id="confirmTitle">Are you sure?</h3>
+    <p id="confirmMsg" class="muted"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirmNo">Cancel</button>
+      <button class="btn btn-danger" id="confirmYes">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div class="modal" id="loginModal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel">
+    <a class="brand" href="index.html" style="justify-content:center;margin-bottom:20px">
+      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+      <span class="brand-text">App<strong>Verse</strong></span>
+    </a>
+    <h3 class="modal-title" style="justify-content:center">
+      <i class="fa-solid fa-shield-halved"></i> Admin sign in
+    </h3>
+    <div class="alert alert-danger" id="loginErr" hidden></div>
+    <form id="adminLoginForm">
+      <div class="field">
+        <label>Email</label>
+        <input id="adminEmailInput" type="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="adminPasswordInput" type="password" required autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" type="submit" id="adminLoginBtn">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign in
+      </button>
+    </form>
+    <p class="auth-foot"><a href="index.html">← Back to storefront</a></p>
+  </div>
+</div>
+
+<div class="toast-stack" id="toasts"></div>
+<script type="module" src="admin.js"></script>
+</body>
+</html>
