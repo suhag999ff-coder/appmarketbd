@@ -1,0 +1,148 @@
+rules_version = '2';
+
+// =========================================================
+// AppVerse — Firestore Security Rules
+// Public catalog readable; orders user-owned; admin via admins/{uid}.
+// All writes to products/categories/orders-status require admin.
+// =========================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Helpers ----------
+    function isSignedIn() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.enabled == true;
+    }
+
+    function isValidUrl(value) {
+      return value is string && value.size() <= 2048
+        && (value.matches('^https?://.+'));
+    }
+
+    function isValidImageUrl(value) {
+      return value == null || (value is string && value.size() <= 2048
+        && value.matches('^https?://.+'));
+    }
+
+    function isValidPrice(value) {
+      return value is number && value >= 0 && value <= 10000000;
+    }
+
+    function isValidStatus(value) {
+      return value in ['pending', 'confirmed', 'completed', 'cancelled'];
+    }
+
+    function onlyFields(allowed) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowed);
+    }
+
+    // ---------- PRODUCTS ----------
+    match /products/{productId} {
+      // Anyone (signed-in or not) can read available products.
+      allow read: if resource.data.available == true || isAdmin();
+
+      allow create: if isAdmin()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 200
+        && request.resource.data.description is string
+        && request.resource.data.categoryId is string
+        && isValidImageUrl(request.resource.data.imageUrl)
+        && request.resource.data.screenshotUrls is list
+        && request.resource.data.screenshotUrls.size() <= 12
+        && isValidPrice(request.resource.data.price)
+        && isValidPrice(request.resource.data.originalPrice)
+        && request.resource.data.featured is bool
+        && request.resource.data.available is bool
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isAdmin()
+        && isValidImageUrl(request.resource.data.imageUrl)
+        && request.resource.data.screenshotUrls is list
+        && request.resource.data.screenshotUrls.size() <= 12
+        && isValidPrice(request.resource.data.price)
+        && isValidPrice(request.resource.data.originalPrice)
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------- CATEGORIES ----------
+    match /categories/{categoryId} {
+      allow read: if true;
+
+      allow create: if isAdmin()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.active is bool
+        && request.resource.data.createdAt == request.time;
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- USERS ----------
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+
+      allow create: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email is string
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        // Role/admin fields MUST NOT be creatable by users
+        && !request.resource.data.keys().hasAny(['role', 'isAdmin', 'admin', 'claims', 'permissions']);
+
+      allow update: if isSignedIn()
+        && request.auth.uid == userId
+        // Prevent privilege escalation
+        && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['role', 'isAdmin', 'admin', 'claims', 'permissions', 'uid', 'email'])
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------- ORDERS ----------
+    match /orders/{orderId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+
+      // Client may only *create* an order via Cloud Function. Direct client writes denied.
+      allow create: if false;
+
+      // Users cannot update or delete their own orders. Only admins can.
+      allow update: if isAdmin()
+        && isValidStatus(request.resource.data.status)
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------- ADMINS ----------
+    // Only an existing admin may read/write the admins collection.
+    // The very first admin is provisioned OUT-OF-BAND (Admin SDK / Cloud Function).
+    match /admins/{adminId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == adminId);
+      allow write: if isAdmin();
+    }
+
+    // ---------- SETTINGS ----------
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ---------- Default deny ----------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

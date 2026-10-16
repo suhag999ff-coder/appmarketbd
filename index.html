@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#4f46e5" />
+<meta name="description" content="AppVerse — a premium marketplace for professional digital applications." />
+<title>AppVerse — Premium App Marketplace</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="styles.css" />
+
+<!-- Firebase modular SDK via importmap (also works on Vercel) -->
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js",
+    "firebase/functions": "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js"
+  }
+}
+</script>
+</head>
+<body>
+
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AppVerse home">
+      <span class="brand-mark"><i class="fa-solid fa-cube" aria-hidden="true"></i></span>
+      <span class="brand-text">App<strong>Verse</strong></span>
+    </a>
+
+    <form class="search-bar" id="searchForm" role="search" autocomplete="off" onsubmit="return false;">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      <label class="sr-only" for="navSearch">Search applications</label>
+      <input id="navSearch" type="search" placeholder="Search apps, categories, keywords…" />
+      <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" hidden>
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </form>
+
+    <nav class="header-nav" aria-label="Main navigation">
+      <a class="nav-link" href="#featured"><i class="fa-solid fa-star" aria-hidden="true"></i><span>Featured</span></a>
+      <a class="nav-link" href="#all"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><span>Browse</span></a>
+      <a class="nav-link" href="orders.html"><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Orders</span></a>
+      <button class="nav-link cart-link" type="button" id="cartBtn" aria-label="Open cart">
+        <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+        <span class="cart-count" id="cartCount" hidden>0</span>
+      </button>
+      <div class="account-slot" id="accountSlot">
+        <a class="btn btn-primary btn-sm" href="login.html">
+          <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> Sign in
+        </a>
+      </div>
+    </nav>
+
+    <button class="icon-btn mobile-only" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu" hidden>
+    <div class="container">
+      <form class="search-bar" id="searchFormMobile" role="search" autocomplete="off" onsubmit="return false;">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <label class="sr-only" for="mobileSearch">Search applications</label>
+        <input id="mobileSearch" type="search" placeholder="Search apps…" />
+      </form>
+      <a class="mobile-link" href="#featured"><i class="fa-solid fa-star"></i> Featured</a>
+      <a class="mobile-link" href="#popular"><i class="fa-solid fa-fire"></i> Popular</a>
+      <a class="mobile-link" href="#latest"><i class="fa-solid fa-clock"></i> Latest</a>
+      <a class="mobile-link" href="#all"><i class="fa-solid fa-layer-group"></i> All apps</a>
+      <a class="mobile-link" href="orders.html"><i class="fa-solid fa-receipt"></i> My orders</a>
+      <a class="mobile-link" href="account.html"><i class="fa-solid fa-user"></i> My account</a>
+      <button class="mobile-link" type="button" id="cartBtnMobile"><i class="fa-solid fa-bag-shopping"></i> Cart</button>
+      <div class="mobile-account" id="mobileAccountSlot"></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <span class="pill"><i class="fa-solid fa-shield-halved"></i> Verified listings · Manual order review</span>
+        <h1>Premium applications, <span class="grad">curated</span> for professionals.</h1>
+        <p>
+          Discover production-grade apps across business, design, development and productivity.
+          Compare versions, check pricing, and place a reviewed order in minutes.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="#all">
+            <i class="fa-solid fa-compass"></i> Browse marketplace
+          </a>
+          <a class="btn btn-ghost btn-lg" href="#featured">
+            <i class="fa-solid fa-bolt"></i> See featured
+          </a>
+        </div>
+        <dl class="hero-stats">
+          <div><dt id="statProducts">—</dt><dd>Listed apps</dd></div>
+          <div><dt id="statCategories">—</dt><dd>Categories</dd></div>
+          <div><dt>24/7</dt><dd>Order tracking</dd></div>
+        </dl>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="hero-card hc-1"><i class="fa-solid fa-mobile-screen-button"></i><span>Mobile</span></div>
+        <div class="hero-card hc-2"><i class="fa-solid fa-chart-line"></i><span>Business</span></div>
+        <div class="hero-card hc-3"><i class="fa-solid fa-pen-ruler"></i><span>Design</span></div>
+        <div class="hero-card hc-4"><i class="fa-solid fa-code"></i><span>Dev tools</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tight" id="categories">
+    <div class="container">
+      <div class="chips" id="categoryChips" role="tablist" aria-label="Filter by category">
+        <button class="chip is-active" data-category="" role="tab" aria-selected="true">All</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="featured">
+    <div class="container">
+      <header class="section-head">
+        <div>
+          <h2><i class="fa-solid fa-star"></i> Featured applications</h2>
+          <p>Hand-picked listings highlighted by the marketplace team.</p>
+        </div>
+      </header>
+      <div class="grid grid-products" id="featuredGrid"></div>
+      <div class="empty-state" id="featuredEmpty" hidden>
+        <i class="fa-regular fa-star"></i>
+        <h3>No featured apps yet</h3>
+        <p>Featured listings will appear here once an administrator marks them.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="popular">
+    <div class="container">
+      <header class="section-head">
+        <div>
+          <h2><i class="fa-solid fa-fire"></i> Popular products</h2>
+          <p>Ranked by average customer rating recorded per listing.</p>
+        </div>
+      </header>
+      <div class="grid grid-products" id="popularGrid"></div>
+      <div class="empty-state" id="popularEmpty" hidden>
+        <i class="fa-regular fa-face-smile"></i>
+        <h3>Nothing rated yet</h3>
+        <p>Products with customer ratings will be ranked here.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="latest">
+    <div class="container">
+      <header class="section-head">
+        <div>
+          <h2><i class="fa-solid fa-clock-rotate-left"></i> Latest arrivals</h2>
+          <p>The newest additions to the marketplace.</p>
+        </div>
+      </header>
+      <div class="grid grid-products" id="latestGrid"></div>
+      <div class="empty-state" id="latestEmpty" hidden>
+        <i class="fa-regular fa-clock"></i>
+        <h3>No products yet</h3>
+        <p>New listings will show up here as soon as they are published.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="all">
+    <div class="container">
+      <header class="section-head section-head-toolbar">
+        <div>
+          <h2><i class="fa-solid fa-layer-group"></i> Browse all applications</h2>
+          <p id="resultsCount" class="muted">Loading catalog…</p>
+        </div>
+        <div class="toolbar">
+          <div class="field-inline">
+            <label class="sr-only" for="filterCategory">Category</label>
+            <select id="filterCategory" class="select">
+              <option value="">All categories</option>
+            </select>
+          </div>
+          <div class="field-inline">
+            <label class="sr-only" for="sortSelect">Sort by</label>
+            <select id="sortSelect" class="select">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="name">Name (A–Z)</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <div class="grid grid-products" id="allGrid"></div>
+
+      <div class="skeleton-grid" id="allSkeleton">
+        <div class="skeleton-card"></div><div class="skeleton-card"></div>
+        <div class="skeleton-card"></div><div class="skeleton-card"></div>
+      </div>
+
+      <div class="empty-state" id="allEmpty" hidden>
+        <i class="fa-regular fa-folder-open"></i>
+        <h3>No matching applications</h3>
+        <p>Try a different keyword or clear the filters.</p>
+        <button class="btn btn-ghost" id="resetFiltersBtn">Reset filters</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="index.html">
+        <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+        <span class="brand-text">App<strong>Verse</strong></span>
+      </a>
+      <p class="muted">
+        A curated marketplace for professional software. Orders are reviewed manually —
+        no automatic payment capture is performed on this site.
+      </p>
+    </div>
+    <div>
+      <h4>Marketplace</h4>
+      <ul class="footer-links">
+        <li><a href="#featured">Featured</a></li>
+        <li><a href="#popular">Popular</a></li>
+        <li><a href="#latest">Latest</a></li>
+        <li><a href="#all">All applications</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <ul class="footer-links">
+        <li><a href="login.html">Sign in</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="orders.html">My orders</a></li>
+        <li><a href="account.html">My profile</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <ul class="footer-links">
+        <li><a href="mailto:support@appverse.example">support@appverse.example</a></li>
+        <li><a href="tel:+8800000000000">+880 0000-000000</a></li>
+        <li><span class="muted">Sat–Thu, 10:00–19:00</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© <span id="year"></span> AppVerse. All rights reserved.</span>
+    <span class="muted">Payments are verified manually by our team.</span>
+  </div>
+</footer>
+
+<!-- Product details modal -->
+<div class="modal" id="productModal" hidden>
+  <div class="modal-backdrop" data-close="productModal"></div>
+  <div class="modal-panel modal-lg" role="dialog" aria-modal="true" aria-labelledby="pmName">
+    <button class="modal-close" type="button" data-close="productModal" aria-label="Close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="product-detail" id="productDetail"></div>
+  </div>
+</div>
+
+<!-- Cart drawer -->
+<aside class="drawer" id="cartDrawer" hidden aria-label="Shopping cart">
+  <div class="drawer-backdrop" data-close="cartDrawer"></div>
+  <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <header class="drawer-head">
+      <h3 id="cartTitle"><i class="fa-solid fa-bag-shopping"></i> Your cart</h3>
+      <button class="icon-btn" type="button" data-close="cartDrawer" aria-label="Close cart">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </header>
+    <div class="drawer-body" id="cartItems"></div>
+    <footer class="drawer-foot">
+      <div class="cart-total-row">
+        <span>Estimated total</span>
+        <strong id="cartTotal">৳0</strong>
+      </div>
+      <p class="muted small">Final total is verified by our team before fulfilment.</p>
+      <button class="btn btn-primary btn-block" id="checkoutBtn" disabled>
+        <i class="fa-solid fa-arrow-right-long"></i> Continue to order
+      </button>
+    </footer>
+  </div>
+</aside>
+
+<!-- Order request modal -->
+<div class="modal" id="orderModal" hidden>
+  <div class="modal-backdrop" data-close="orderModal"></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+    <button class="modal-close" type="button" data-close="orderModal" aria-label="Close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <h3 id="orderTitle" class="modal-title"><i class="fa-solid fa-file-invoice"></i> Submit order request</h3>
+
+    <div class="alert alert-info">
+      <i class="fa-solid fa-circle-info"></i>
+      <div>
+        This is a <strong>manual order request</strong>. Nothing is charged automatically.
+        Send the payment manually, then submit the reference. Our team verifies it before
+        the order is marked complete.
+      </div>
+    </div>
+
+    <div class="order-summary" id="orderSummary"></div>
+
+    <form id="orderForm" novalidate>
+      <div class="field">
+        <label for="ofName">Full name <span class="req">*</span></label>
+        <input id="ofName" name="customerName" type="text" required maxlength="120" autocomplete="name" />
+        <small class="error" data-error-for="ofName"></small>
+      </div>
+
+      <div class="field">
+        <label for="ofContact">Contact number <span class="req">*</span></label>
+        <input id="ofContact" name="contactNumber" type="tel" required maxlength="30" autocomplete="tel" placeholder="01XXXXXXXXX" />
+        <small class="error" data-error-for="ofContact"></small>
+      </div>
+
+      <div class="field">
+        <label for="ofMethod">Payment method <span class="req">*</span></label>
+        <select id="ofMethod" name="paymentMethod" class="select" required>
+          <option value="bkash">bKash</option>
+          <option value="nagad">Nagad</option>
+          <option value="rocket">Rocket</option>
+          <option value="cash">Cash / manual arrangement</option>
+        </select>
+      </div>
+
+      <div class="alert alert-warning" id="paymentInstructions">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div>Send the payment manually to the number provided in your order confirmation.
+          <strong>Never share your PIN or OTP with anyone.</strong></div>
+      </div>
+
+      <div class="field" id="txnField">
+        <label for="ofTxn">Transaction ID / reference</label>
+        <input id="ofTxn" name="transactionId" type="text" maxlength="60" placeholder="e.g. 8N7A2K9LQ1" />
+        <small class="hint">Enter the reference from your payment SMS. Never share your PIN or OTP.</small>
+        <small class="error" data-error-for="ofTxn"></small>
+      </div>
+
+      <div class="field">
+        <label for="ofNote">Note for the team (optional)</label>
+        <textarea id="ofNote" name="note" rows="3" maxlength="500" placeholder="Anything we should know about this order?"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close="orderModal">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="placeOrderBtn">
+          <i class="fa-solid fa-paper-plane"></i> Submit order request
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Confirm dialog -->
+<div class="modal" id="confirmModal" hidden>
+  <div class="modal-backdrop" data-close="confirmModal"></div>
+  <div class="modal-panel modal-sm" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h3 id="confirmTitle" class="modal-title">Are you sure?</h3>
+    <p id="confirmMessage" class="muted"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" id="confirmCancel">Cancel</button>
+      <button class="btn btn-danger" type="button" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toasts" role="status" aria-live="polite"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
