@@ -1,17 +1,11 @@
 /* =========================================================
    app.js — Storefront controller
-   - Loads public products & categories from Firestore
-   - Renders featured / popular / latest / all grids
-   - Handles search, filters, sort
-   - Product details modal
-   - Cart (localStorage) + manual order request via Cloud Function
-   - Auth-aware header
+   Resilient product loading: tries optimized query, falls
+   back gracefully when a Firestore composite index is missing.
    ========================================================= */
 
 import { auth, db, functions } from "./firebase-config.js";
-import {
-  onAuthStateChanged, signOut
-} from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import {
   collection, query, where, orderBy, limit, getDocs, doc, getDoc
 } from "firebase/firestore";
@@ -35,6 +29,7 @@ const state = {
   categoryId: "",
   sort: "newest",
   unsubscribeAuth: null,
+  productsUsingFallback: false,
 };
 
 /* ------------------ DOM helpers ------------------ */
@@ -45,7 +40,6 @@ const el = (tag, attrs = {}, children = []) => {
   for (const [k, v] of Object.entries(attrs)) {
     if (k === "class") node.className = v;
     else if (k === "text") node.textContent = v;
-    else if (k === "html") node.innerHTML = v; // used ONLY with literal templates below
     else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2), v);
     else if (v === true) node.setAttribute(k, "");
     else if (v !== false && v != null) node.setAttribute(k, v);
@@ -175,7 +169,7 @@ function removeFromCart(id) {
   toast("Item removed from cart.", "info");
 }
 
-/* ------------------ Product fetch ------------------ */
+/* ------------------ Product fetch (RESILIENT) ------------------ */
 async function loadCategories() {
   try {
     const snap = await getDocs(query(collection(db, "categories"), where("active", "==", true)));
@@ -186,28 +180,90 @@ async function loadCategories() {
     const stat = $("#statCategories");
     if (stat) stat.textContent = String(state.categories.length);
   } catch (err) {
-    console.warn("categories load failed", err);
+    console.warn("[app] categories load failed:", err?.code || err);
+    // Non-fatal — the storefront works without categories.
   }
 }
 
+/**
+ * Loads products. Tries the optimized compound query first.
+ * If the required Firestore composite index is missing,
+ * falls back to a simple collection scan and filters/sorts client-side.
+ * This prevents the storefront from breaking while the index builds.
+ */
 async function loadProducts() {
+  let snap = null;
+  let usedFallback = false;
+
+  // ---- Attempt 1: optimized compound query ----
   try {
-    const snap = await getDocs(query(
+    snap = await getDocs(query(
       collection(db, "products"),
       where("available", "==", true),
       orderBy("createdAt", "desc"),
       limit(200)
     ));
-    state.products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (err) {
+    const isIndexError =
+      err?.code === "failed-precondition" ||
+      /requires an index|composite index/i.test(err?.message || "");
+    if (isIndexError) {
+      usedFallback = true;
+      console.warn("[app] Firestore composite index missing. Falling back to simple query.");
+      console.info(
+        "%c[app] Create the required index from this link:",
+        "color:#4f46e5;font-weight:700",
+        err?.message
+      );
+    } else {
+      // Genuine error — surface it and stop.
+      console.error("[app] products load failed:", err);
+      toast("Could not load products. Please try again.", "error", "Loading failed");
+      hideSkeletons();
+      const empty = $("#allEmpty");
+      if (empty) empty.hidden = false;
+      return;
+    }
+  }
+
+  // ---- Attempt 2: fallback simple query ----
+  if (!snap) {
+    try {
+      snap = await getDocs(query(collection(db, "products"), limit(500)));
+    } catch (err) {
+      console.error("[app] fallback query failed:", err);
+      toast("Could not load products. Please try again.", "error", "Loading failed");
+      hideSkeletons();
+      const empty = $("#allEmpty");
+      if (empty) empty.hidden = false;
+      return;
+    }
+  }
+
+  state.productsUsingFallback = usedFallback;
+
+  try {
+    state.products = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      // In fallback mode we must filter + sort client-side.
+      .filter(p => p.available === true)
+      .sort((a, b) => tsOf(b) - tsOf(a));
+
     const stat = $("#statProducts");
     if (stat) stat.textContent = String(state.products.length);
+
+    if (usedFallback) {
+      toast(
+        "Products loaded, but a performance index is missing. Ask the site owner to create it.",
+        "info",
+        "Using fallback mode"
+      );
+    }
+
     renderAll();
   } catch (err) {
-    console.error("products load failed", err);
-    toast("Could not load products. Check your connection or Firestore indexes.", "error", "Loading failed");
+    console.error("[app] render failed:", err);
     hideSkeletons();
-    const empty = $("#allEmpty");
-    if (empty) empty.hidden = false;
   }
 }
 
@@ -283,18 +339,14 @@ function renderInto(gridId, emptyId, items) {
 function renderAll() {
   const list = state.products;
 
-  // Featured
   renderInto("featuredGrid", "featuredEmpty", list.filter(p => p.featured === true).slice(0, 8));
 
-  // Popular: has rating, sorted desc
   const rated = list.filter(p => Number(p.rating) > 0)
     .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
   renderInto("popularGrid", "popularEmpty", rated.slice(0, 8));
 
-  // Latest
   renderInto("latestGrid", "latestEmpty", list.slice(0, 8));
 
-  // All (with search/category/sort)
   renderAllGrid();
 }
 
@@ -349,26 +401,22 @@ function tsOf(p) {
   return 0;
 }
 
-/* ------------------ Category chips / select ------------------ */
+/* ------------------ Category chips ------------------ */
 function renderCategoryChips() {
   const wrap = $("#categoryChips");
   if (!wrap) return;
   wrap.replaceChildren();
-  const mkChip = (label, value) => {
-    const btn = el("button", {
-      class: "chip" + (state.categoryId === value ? " is-active" : ""),
-      type: "button",
-      "role": "tab",
-      "aria-selected": state.categoryId === value ? "true" : "false",
-      onclick: () => {
-        state.categoryId = value;
-        renderCategoryChips();
-        renderCategorySelect();
-        renderAllGrid();
-      }
-    }, [label]);
-    return btn;
-  };
+  const mkChip = (label, value) => el("button", {
+    class: "chip" + (state.categoryId === value ? " is-active" : ""),
+    type: "button", "role": "tab",
+    "aria-selected": state.categoryId === value ? "true" : "false",
+    onclick: () => {
+      state.categoryId = value;
+      renderCategoryChips();
+      renderCategorySelect();
+      renderAllGrid();
+    }
+  }, [label]);
   wrap.appendChild(mkChip("All", ""));
   state.categories.forEach(c => wrap.appendChild(mkChip(c.name, c.id)));
 }
@@ -498,30 +546,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* ------------------ Confirm ------------------ */
-export function confirmDialog(message, title = "Are you sure?") {
-  return new Promise((resolve) => {
-    const modal = $("#confirmModal");
-    if (!modal) return resolve(window.confirm(message));
-    $("#confirmTitle").textContent = title;
-    $("#confirmMessage").textContent = message;
-    modal.hidden = false;
-    const cleanup = (result) => {
-      modal.hidden = true;
-      $("#confirmOk").removeEventListener("click", ok);
-      $("#confirmCancel").removeEventListener("click", cancel);
-      document.removeEventListener("keydown", onKey);
-      resolve(result);
-    };
-    const ok = () => cleanup(true);
-    const cancel = () => cleanup(false);
-    const onKey = (e) => { if (e.key === "Escape") cleanup(false); };
-    $("#confirmOk").addEventListener("click", ok);
-    $("#confirmCancel").addEventListener("click", cancel);
-    document.addEventListener("keydown", onKey);
-  });
-}
-
 /* ------------------ Order flow ------------------ */
 function renderOrderSummary() {
   const cart = readCart();
@@ -556,7 +580,6 @@ async function submitOrder(e) {
   const cart = readCart();
   if (!cart.length) { toast("Your cart is empty.", "error"); return; }
 
-  // Validate
   const name = $("#ofName").value.trim();
   const contact = $("#ofContact").value.trim();
   const method = $("#ofMethod").value;
@@ -582,7 +605,6 @@ async function submitOrder(e) {
       return;
     }
 
-    // Call Cloud Function — this performs authoritative price calculation server-side.
     const createOrder = httpsCallable(functions, "createOrder");
     const payload = {
       customerName: name,
@@ -645,7 +667,7 @@ function renderAccount() {
   }
 }
 
-/* ------------------ Search / filter wiring ------------------ */
+/* ------------------ Wiring ------------------ */
 function bindSearch() {
   const nav = $("#navSearch");
   const mob = $("#mobileSearch");
@@ -711,11 +733,8 @@ function bindCart() {
     }
     closeModal("cartDrawer");
     renderOrderSummary();
-    // Pre-fill from user
     const u = auth.currentUser;
-    if (u) {
-      $("#ofName").value = u.displayName || "";
-    }
+    if (u) $("#ofName").value = u.displayName || "";
     openModal("orderModal");
   });
   $("#orderForm")?.addEventListener("submit", submitOrder);
@@ -731,11 +750,9 @@ function init() {
   bindCart();
   renderAccount();
 
-  // Firestore listeners
   loadCategories();
   loadProducts();
 
-  // Auth state
   state.unsubscribeAuth = onAuthStateChanged(auth, (user) => {
     state.user = user || null;
     renderAccount();
