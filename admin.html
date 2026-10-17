@@ -20,6 +20,7 @@
   <nav class="admin-nav">
     <button data-view="dashboard" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
     <button data-view="products"><i class="fa-solid fa-box"></i> Products</button>
+    <button data-view="categories"><i class="fa-solid fa-tags"></i> Categories</button>
     <button data-view="orders"><i class="fa-solid fa-receipt"></i> Orders</button>
     <button data-view="users"><i class="fa-solid fa-users"></i> Users</button>
     <button data-view="settings"><i class="fa-solid fa-gear"></i> Settings</button>
@@ -59,9 +60,18 @@
         <i class="fa-solid fa-plus"></i> New product
       </button>
     </div>
-    <div class="panel">
-      <div id="productsList"></div>
+    <div class="panel"><div id="productsList"></div></div>
+  </section>
+
+  <!-- Categories -->
+  <section data-view="categories" class="admin-view" hidden>
+    <div class="admin-toolbar">
+      <h3 style="flex:1;font-size:1rem">Manage Categories</h3>
+      <button class="btn btn-primary btn-sm" id="newCategoryBtn">
+        <i class="fa-solid fa-plus"></i> New category
+      </button>
     </div>
+    <div class="panel"><div id="categoriesList"></div></div>
   </section>
 
   <!-- Orders -->
@@ -76,46 +86,85 @@
         <option value="cancelled">Cancelled</option>
       </select>
     </div>
-    <div class="panel">
-      <div id="ordersList"></div>
-    </div>
+    <div class="panel"><div id="ordersList"></div></div>
   </section>
 
   <!-- Users -->
   <section data-view="users" class="admin-view" hidden>
-    <div class="panel">
-      <div id="usersList"></div>
-    </div>
+    <div class="panel"><div id="usersList"></div></div>
   </section>
 
   <!-- Settings -->
   <section data-view="settings" class="admin-view" hidden>
     <div class="panel">
-      <div class="panel-head"><h2><i class="fa-solid fa-store"></i> Store settings</h2></div>
+      <div class="panel-head"><h2><i class="fa-solid fa-store"></i> Store & Support Settings</h2></div>
       <div class="panel-body">
         <form id="settingsForm">
           <div class="field">
-            <label>Store name</label>
+            <label>Store Name</label>
             <input id="sStoreName" maxlength="80" value="AppVerse">
           </div>
           <div class="field">
-            <label>Support email</label>
+            <label>Support Phone (For Live Chat / WhatsApp)</label>
+            <input id="sPhone" maxlength="30" placeholder="01XXXXXXXXX">
+          </div>
+          <div class="field">
+            <label>Support Email</label>
             <input id="sEmail" type="email" maxlength="120">
           </div>
+
+          <hr style="margin:20px 0;border:0;border-top:1px solid var(--border)">
+          <h3 style="font-size:1rem;margin-bottom:14px"><i class="fa-solid fa-money-bill"></i> Payment Methods</h3>
+          
+          <div class="grid-2">
+             <div class="field">
+               <label>bKash Number</label>
+               <input id="sBkash" maxlength="30" placeholder="01XXXXXXXXX">
+             </div>
+             <div class="field">
+               <label>bKash QR Code Image URL</label>
+               <input id="sBkashQr" type="url" placeholder="https://…">
+             </div>
+          </div>
+
+          <div class="grid-2">
+             <div class="field">
+               <label>Nagad Number</label>
+               <input id="sNagad" maxlength="30" placeholder="01XXXXXXXXX">
+             </div>
+             <div class="field">
+               <label>Nagad QR Code Image URL</label>
+               <input id="sNagadQr" type="url" placeholder="https://…">
+             </div>
+          </div>
+
+          <div class="grid-2">
+             <div class="field">
+               <label>Rocket Number</label>
+               <input id="sRocket" maxlength="30" placeholder="01XXXXXXXXX">
+             </div>
+             <div class="field">
+               <label>Rocket QR Code Image URL</label>
+               <input id="sRocketQr" type="url" placeholder="https://…">
+             </div>
+          </div>
+
+          <hr style="margin:20px 0;border:0;border-top:1px solid var(--border)">
+          <h3 style="font-size:1rem;margin-bottom:14px"><i class="fa-brands fa-telegram"></i> Telegram Notification Integration</h3>
+          
           <div class="field">
-            <label>Support phone</label>
-            <input id="sPhone" maxlength="30">
+            <label>Telegram Bot Token</label>
+            <input id="sTelegramToken" placeholder="e.g. 123456:ABC-DEF...">
+            <small class="hint">Get it from @BotFather</small>
           </div>
           <div class="field">
-            <label>bKash number</label>
-            <input id="sBkash" maxlength="30" placeholder="01XXXXXXXXX">
+            <label>Telegram Chat ID</label>
+            <input id="sTelegramChat" placeholder="e.g. -1004322135682">
+            <small class="hint">Get it from @userinfobot</small>
           </div>
-          <div class="field">
-            <label>Nagad number</label>
-            <input id="sNagad" maxlength="30">
-          </div>
-          <button class="btn btn-primary btn-block" type="submit">
-            <i class="fa-solid fa-floppy-disk"></i> Save settings
+
+          <button class="btn btn-primary btn-block btn-lg" type="submit" style="margin-top:10px">
+            <i class="fa-solid fa-floppy-disk"></i> Save All Settings
           </button>
         </form>
       </div>
@@ -143,19 +192,18 @@
       </div>
       <div class="field">
         <label>Description <span class="req">*</span></label>
-        <textarea id="pDescription" required maxlength="4000" rows="4"></textarea>
+        <textarea id="pDescription" required maxlength="4000" rows="3"></textarea>
       </div>
       <div class="field">
         <label>Main image URL <span class="req">*</span></label>
         <input id="pImageUrl" type="url" required placeholder="https://…">
-        <small class="hint">Must start with http:// or https://</small>
         <small class="error" data-err="pImageUrl"></small>
       </div>
       <div class="field">
         <label>Extra screenshot URLs (one per line)</label>
         <textarea id="pScreenshots" rows="2" placeholder="https://…&#10;https://…"></textarea>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="grid-2">
         <div class="field">
           <label>Price (৳) <span class="req">*</span></label>
           <input id="pPrice" type="number" min="0" step="0.01" required>
@@ -165,25 +213,39 @@
           <input id="pOriginalPrice" type="number" min="0" step="0.01">
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="field">
-          <label>Version</label>
-          <input id="pVersion" maxlength="30">
-        </div>
-        <div class="field">
-          <label>Product URL</label>
-          <input id="pProductUrl" type="url" placeholder="https://…">
-        </div>
-      </div>
       <div class="row" style="gap:20px;margin:6px 0 14px">
         <label class="switch"><input type="checkbox" id="pFeatured"><span class="track"></span> Featured</label>
         <label class="switch"><input type="checkbox" id="pAvailable" checked><span class="track"></span> Available</label>
       </div>
       <div class="modal-actions">
         <button class="btn btn-ghost" type="button" data-close="productModal">Cancel</button>
-        <button class="btn btn-primary" type="submit" id="saveProductBtn">
-          <i class="fa-solid fa-floppy-disk"></i> Save
-        </button>
+        <button class="btn btn-primary" type="submit" id="saveProductBtn"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="modal" id="categoryModal" hidden>
+  <div class="modal-backdrop" data-close="categoryModal"></div>
+  <div class="modal-panel">
+    <button class="modal-close" data-close="categoryModal"><i class="fa-solid fa-xmark"></i></button>
+    <h3 class="modal-title" id="categoryModalTitle"><i class="fa-solid fa-tag"></i> New category</h3>
+    <form id="categoryForm">
+      <input type="hidden" id="cId">
+      <div class="field">
+        <label>Name <span class="req">*</span></label>
+        <input id="cName" required maxlength="80" placeholder="e.g. Business">
+      </div>
+      <div class="field">
+        <label>Slug <span class="req">*</span></label>
+        <input id="cSlug" required maxlength="80" placeholder="business">
+        <small class="hint">Lowercase, no spaces</small>
+      </div>
+      <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="cActive" checked><span class="track"></span> Active</label>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close="categoryModal">Cancel</button>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button>
       </div>
     </form>
   </div>
@@ -219,9 +281,7 @@
       <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
       <span class="brand-text">App<strong>Verse</strong></span>
     </a>
-    <h3 class="modal-title" style="justify-content:center">
-      <i class="fa-solid fa-shield-halved"></i> Admin sign in
-    </h3>
+    <h3 class="modal-title" style="justify-content:center"><i class="fa-solid fa-shield-halved"></i> Admin sign in</h3>
     <div class="alert alert-danger" id="loginErr" hidden></div>
     <form id="adminLoginForm">
       <div class="field">
@@ -232,9 +292,7 @@
         <label>Password</label>
         <input id="adminPasswordInput" type="password" required autocomplete="current-password">
       </div>
-      <button class="btn btn-primary btn-block btn-lg" type="submit" id="adminLoginBtn">
-        <i class="fa-solid fa-right-to-bracket"></i> Sign in
-      </button>
+      <button class="btn btn-primary btn-block btn-lg" type="submit" id="adminLoginBtn"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
     </form>
     <p class="auth-foot"><a href="index.html">← Back to storefront</a></p>
   </div>
