@@ -17,26 +17,21 @@
       <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
       <span class="brand-text">App<strong>Verse</strong></span>
     </a>
-
-    <div class="search-bar hide-md" id="searchWrap">
+    <div class="search-bar hide-md">
       <i class="fa-solid fa-magnifying-glass"></i>
       <input id="navSearch" type="search" placeholder="Search apps…" autocomplete="off">
     </div>
-
-    <nav class="desk-nav show-md" id="deskNav">
+    <nav class="desk-nav show-md">
       <a href="#featured">Featured</a>
       <a href="#browse">Browse</a>
       <a href="orders.html">Orders</a>
     </nav>
-
     <div class="spacer"></div>
-
-    <button class="header-icon hide-md" id="cartBtn" aria-label="Cart">
+    <button class="header-icon hide-md" id="cartBtn">
       <i class="fa-solid fa-bag-shopping"></i>
       <span class="badge" id="cartCount" hidden>0</span>
     </button>
-
-    <a class="header-icon" id="accountIcon" href="login.html" aria-label="Account">
+    <a class="header-icon" id="accountIcon" href="login.html">
       <i class="fa-solid fa-user"></i>
     </a>
   </div>
@@ -49,19 +44,14 @@
     <h1>Premium apps,<br>curated for you.</h1>
     <p>Discover production-grade applications across business, design, development and productivity.</p>
     <div class="hero-actions">
-      <a class="btn btn-primary" href="#browse">
-        <i class="fa-solid fa-compass"></i> Browse
-      </a>
-      <a class="btn btn-ghost" href="#featured">
-        <i class="fa-solid fa-bolt"></i> Featured
-      </a>
+      <a class="btn btn-primary" href="#browse"><i class="fa-solid fa-compass"></i> Browse</a>
+      <a class="btn btn-ghost" href="#featured"><i class="fa-solid fa-bolt"></i> Featured</a>
     </div>
-    <div class="search-bar hide-md" style="display:none"></div>
   </div>
 </section>
 
 <!-- MOBILE SEARCH -->
-<section class="container hide-md" id="mobileSearchWrap">
+<section class="container hide-md">
   <div class="search-bar" style="margin-top:-8px">
     <i class="fa-solid fa-magnifying-glass"></i>
     <input id="mobileSearch" type="search" placeholder="Search apps…" autocomplete="off">
@@ -69,7 +59,7 @@
 </section>
 
 <!-- CATEGORIES -->
-<section class="section" id="categories" style="padding-top:8px">
+<section class="section" style="padding-top:8px">
   <div class="container">
     <div class="chips" id="categoryChips">
       <button class="chip active" data-cat="">All</button>
@@ -80,14 +70,10 @@
 <!-- FEATURED -->
 <section class="section" id="featured">
   <div class="container">
-    <div class="section-head">
-      <h2><i class="fa-solid fa-star"></i> Featured</h2>
-    </div>
+    <div class="section-head"><h2><i class="fa-solid fa-star"></i> Featured</h2></div>
     <div class="product-grid" id="featuredGrid"></div>
     <div class="empty-state" id="featuredEmpty" hidden>
-      <i class="fa-regular fa-star"></i>
-      <h3>No featured apps yet</h3>
-      <p>Featured listings will appear here.</p>
+      <i class="fa-regular fa-star"></i><h3>No featured apps yet</h3>
     </div>
   </div>
 </section>
@@ -95,14 +81,10 @@
 <!-- LATEST -->
 <section class="section" id="latest">
   <div class="container">
-    <div class="section-head">
-      <h2><i class="fa-solid fa-clock-rotate-left"></i> Latest</h2>
-    </div>
+    <div class="section-head"><h2><i class="fa-solid fa-clock-rotate-left"></i> Latest</h2></div>
     <div class="product-grid" id="latestGrid"></div>
     <div class="empty-state" id="latestEmpty" hidden>
-      <i class="fa-regular fa-clock"></i>
-      <h3>No products yet</h3>
-      <p>New listings will appear here.</p>
+      <i class="fa-regular fa-clock"></i><h3>No products yet</h3>
     </div>
   </div>
 </section>
@@ -122,15 +104,11 @@
     <p class="muted small" id="resultCount" style="margin-bottom:12px">Loading…</p>
     <div class="product-grid" id="allGrid"></div>
     <div class="product-grid" id="allSkeleton">
-      <div class="skeleton skel-card"></div>
-      <div class="skeleton skel-card"></div>
-      <div class="skeleton skel-card"></div>
-      <div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div><div class="skeleton skel-card"></div>
+      <div class="skeleton skel-card"></div><div class="skeleton skel-card"></div>
     </div>
     <div class="empty-state" id="allEmpty" hidden>
-      <i class="fa-regular fa-folder-open"></i>
-      <h3>No matching applications</h3>
-      <p>Try a different search or filter.</p>
+      <i class="fa-regular fa-folder-open"></i><h3>No matching applications</h3>
     </div>
   </div>
 </section>
@@ -140,11 +118,8 @@
   <div class="container">
     <p><strong>AppVerse</strong> — Premium app marketplace</p>
     <p style="margin-top:8px">
-      <a href="login.html">Login</a>
-      <a href="register.html">Register</a>
-      <a href="orders.html">Orders</a>
-      <a href="account.html">Account</a>
-      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a> <a href="register.html">Register</a>
+      <a href="orders.html">Orders</a> <a href="account.html">Account</a> <a href="admin.html">Admin</a>
     </p>
     <p style="margin-top:12px;font-size:0.75rem">© <span id="year"></span> AppVerse</p>
   </div>
@@ -152,31 +127,61 @@
 
 <!-- BOTTOM NAV (mobile) -->
 <nav class="bottom-nav">
-  <a href="index.html" class="active">
-    <i class="fa-solid fa-house"></i><span>Home</span>
-  </a>
-  <a href="#browse" id="navBrowse">
-    <i class="fa-solid fa-magnifying-glass"></i><span>Browse</span>
-  </a>
-  <a href="#" id="navCart">
-    <i class="fa-solid fa-bag-shopping"></i><span>Cart</span>
-    <span class="badge" id="cartCountMobile" hidden>0</span>
-  </a>
-  <a href="orders.html">
-    <i class="fa-solid fa-receipt"></i><span>Orders</span>
-  </a>
-  <a href="account.html">
-    <i class="fa-solid fa-user"></i><span>Account</span>
-  </a>
+  <a href="index.html" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a href="#browse" id="navBrowse"><i class="fa-solid fa-magnifying-glass"></i><span>Browse</span></a>
+  <a href="#" id="navCart"><i class="fa-solid fa-bag-shopping"></i><span>Cart</span><span class="badge" id="cartCountMobile" hidden>0</span></a>
+  <a href="orders.html"><i class="fa-solid fa-receipt"></i><span>Orders</span></a>
+  <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
 </nav>
+
+<!-- FLOATING SUPPORT BUTTON -->
+<button class="support-fab" id="supportFab">
+  <i class="fa-solid fa-headset"></i>
+</button>
+
+<!-- SUPPORT WIDGET (LIVE CHAT) -->
+<div class="support-widget" id="supportWidget" hidden>
+  <div class="support-header">
+    <div>
+      <strong>Customer Support</strong>
+      <p style="font-size:0.75rem;opacity:0.9;margin-top:2px">We typically reply in minutes</p>
+    </div>
+    <button class="support-close" id="supportClose"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="support-body">
+    <p style="font-size:0.9rem;margin-bottom:16px">Hi there! 👋 How can we help you today?</p>
+    <a href="#" id="chatWhatsapp" target="_blank" class="support-option">
+      <div class="support-icon whatsapp"><i class="fa-brands fa-whatsapp"></i></div>
+      <div class="support-text">
+        <strong>WhatsApp</strong>
+        <span>Chat with us directly</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+    <a href="#" id="chatCall" class="support-option">
+      <div class="support-icon call"><i class="fa-solid fa-phone"></i></div>
+      <div class="support-text">
+        <strong>Call Us</strong>
+        <span>Speak to a representative</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+    <a href="#" id="chatEmail" class="support-option">
+      <div class="support-icon email"><i class="fa-solid fa-envelope"></i></div>
+      <div class="support-text">
+        <strong>Email Support</strong>
+        <span>Send us an email</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+  </div>
+</div>
 
 <!-- PRODUCT MODAL -->
 <div class="modal" id="productModal" hidden>
   <div class="modal-backdrop" data-close="productModal"></div>
   <div class="modal-panel wide">
-    <button class="modal-close" data-close="productModal" aria-label="Close">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
+    <button class="modal-close" data-close="productModal"><i class="fa-solid fa-xmark"></i></button>
     <div id="productDetail"></div>
   </div>
 </div>
@@ -187,19 +192,12 @@
   <div class="drawer-panel">
     <div class="drawer-head">
       <h3><i class="fa-solid fa-bag-shopping"></i> Cart</h3>
-      <button class="modal-close" style="position:static" data-close="cartDrawer">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+      <button class="modal-close" style="position:static" data-close="cartDrawer"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="drawer-body" id="cartItems"></div>
     <div class="drawer-foot">
-      <div class="cart-total-row">
-        <span>Total</span>
-        <strong id="cartTotal">৳0</strong>
-      </div>
-      <button class="btn btn-primary btn-block" id="checkoutBtn" disabled>
-        <i class="fa-solid fa-arrow-right"></i> Continue to order
-      </button>
+      <div class="cart-total-row"><span>Total</span><strong id="cartTotal">৳0</strong></div>
+      <button class="btn btn-primary btn-block" id="checkoutBtn" disabled><i class="fa-solid fa-arrow-right"></i> Continue</button>
     </div>
   </div>
 </div>
@@ -209,25 +207,24 @@
   <div class="modal-backdrop" data-close="orderModal"></div>
   <div class="modal-panel">
     <button class="modal-close" data-close="orderModal"><i class="fa-solid fa-xmark"></i></button>
-    <h3 class="modal-title"><i class="fa-solid fa-file-invoice"></i> Submit order</h3>
+    <h3 class="modal-title"><i class="fa-solid fa-file-invoice"></i> Checkout</h3>
 
     <div class="alert alert-warn">
       <i class="fa-solid fa-triangle-exclamation"></i>
-      <div>Manual order request. Our team verifies payment before processing. <strong>Never share your PIN/OTP.</strong></div>
+      <div>Send payment manually to the number below and provide the Transaction ID.</div>
     </div>
 
-    <div id="orderSummary" style="margin-bottom:14px"></div>
+    <div id="paymentInstructions" class="payment-instruction-box"></div>
+    <div id="orderSummary" style="margin:14px 0"></div>
 
     <form id="orderForm">
       <div class="field">
         <label>Full name <span class="req">*</span></label>
-        <input id="ofName" required maxlength="120" autocomplete="name">
-        <small class="error" data-err="ofName"></small>
+        <input id="ofName" required maxlength="120">
       </div>
       <div class="field">
         <label>Phone <span class="req">*</span></label>
-        <input id="ofContact" type="tel" required maxlength="30" placeholder="01XXXXXXXXX" autocomplete="tel">
-        <small class="error" data-err="ofContact"></small>
+        <input id="ofContact" type="tel" required maxlength="30" placeholder="01XXXXXXXXX">
       </div>
       <div class="field">
         <label>Payment method <span class="req">*</span></label>
@@ -239,27 +236,19 @@
         </select>
       </div>
       <div class="field" id="txnField">
-        <label>Transaction ID / reference</label>
+        <label>Transaction ID / Reference</label>
         <input id="ofTxn" maxlength="60" placeholder="e.g. 8N7A2K9LQ1">
-        <small class="hint">From your payment SMS. Never share your PIN.</small>
-        <small class="error" data-err="ofTxn"></small>
-      </div>
-      <div class="field">
-        <label>Note (optional)</label>
-        <textarea id="ofNote" maxlength="500" rows="3" placeholder="Anything we should know?"></textarea>
+        <small class="hint">Never share your PIN or OTP.</small>
       </div>
       <div class="modal-actions">
         <button class="btn btn-ghost" type="button" data-close="orderModal">Cancel</button>
-        <button class="btn btn-primary" type="submit" id="submitOrderBtn">
-          <i class="fa-solid fa-paper-plane"></i> Submit
-        </button>
+        <button class="btn btn-primary" type="submit" id="submitOrderBtn"><i class="fa-solid fa-paper-plane"></i> Submit Order</button>
       </div>
     </form>
   </div>
 </div>
 
 <div class="toast-stack" id="toasts"></div>
-
 <script type="module" src="app.js"></script>
 </body>
 </html>
