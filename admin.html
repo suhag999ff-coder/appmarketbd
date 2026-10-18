@@ -3,358 +3,71 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#4f46e5">
-<title>Admin Dashboard · AppVerse</title>
+<title>Admin Panel · AppVerse</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="admin-body">
 
-<!-- ================= SIDEBAR ================= -->
+<!-- Sidebar -->
 <aside class="admin-sidebar" id="adminSidebar">
-  <a class="brand" href="index.html" style="margin-bottom: 24px; padding-left: 8px;">
-    <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
-    <span class="brand-text">App<strong>Verse</strong></span>
-  </a>
-  <span class="admin-badge" style="background:#eef2ff; color:#4f46e5; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:700; margin-left:8px; margin-bottom:20px; display:inline-block;">ADMIN PANEL</span>
-  
+  <a class="brand" href="index.html" style="margin-bottom: 20px;"><span class="brand-mark"><i class="fa-solid fa-cube"></i></span><span class="brand-text">App<strong>Verse</strong></span></a>
   <nav class="admin-nav">
-    <button data-view="dashboard" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+    <button data-view="dashboard" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</button>
     <button data-view="products"><i class="fa-solid fa-box"></i> Products</button>
-    <button data-view="categories"><i class="fa-solid fa-tags"></i> Categories</button>
     <button data-view="orders"><i class="fa-solid fa-receipt"></i> Orders</button>
     <button data-view="users"><i class="fa-solid fa-users"></i> Users</button>
     <button data-view="settings"><i class="fa-solid fa-gear"></i> Settings</button>
-    <button id="adminLogout" class="logout" style="color:var(--danger); margin-top:auto;"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+    <button id="adminLogout" style="color:var(--danger); margin-top:20px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
   </nav>
 </aside>
-<div class="admin-sidebar-backdrop" id="sidebarBackdrop" hidden></div>
 
-<!-- ================= MAIN CONTENT ================= -->
-<div style="flex:1; display:flex; flex-direction:column; min-width:0;">
-  
-  <!-- TOPBAR -->
+<!-- Main Content -->
+<div class="admin-main">
   <header class="admin-topbar">
-    <button class="admin-menu-btn" id="menuBtn" aria-label="Menu">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-    <h1 id="pageTitle">Dashboard</h1>
-    <span class="muted small" id="adminEmail" style="margin-right:12px; font-weight:600;"></span>
+    <button id="menuBtn" style="font-size:1.2rem;"><i class="fa-solid fa-bars"></i></button>
+    <h2 id="pageTitle" style="font-size:1.1rem; flex:1;">Dashboard</h2>
   </header>
 
-  <!-- CONTENT AREA -->
-  <main class="admin-content">
+  <!-- Dashboard -->
+  <section data-view="dashboard">
+    <div class="stat-grid" id="statGrid"></div>
+    <div class="panel"><div class="panel-head">Recent Orders</div><div id="recentOrders"></div></div>
+  </section>
 
-    <!-- 1. DASHBOARD VIEW -->
-    <section data-view="dashboard" class="admin-view">
-      <div class="stat-grid" id="statGrid">
-        <!-- Stats will be injected by JS -->
-        <div class="stat-card"><span class="stat-label">Loading</span><span class="stat-value">—</span></div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2><i class="fa-solid fa-clock-rotate-left"></i> Recent Orders</h2></div>
-        <div class="panel-body" id="recentOrders">
-          <!-- Recent orders will be injected here -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. PRODUCTS VIEW -->
-    <section data-view="products" class="admin-view" hidden>
-      <div class="admin-toolbar">
-        <input id="productSearch" placeholder="Search products…" type="search" style="max-width: 300px;">
-        <button class="btn btn-primary btn-sm" id="newProductBtn">
-          <i class="fa-solid fa-plus"></i> New Product
-        </button>
-      </div>
-      <div class="panel">
-        <div id="productsList">
-          <!-- Products list will be injected here -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. CATEGORIES VIEW -->
-    <section data-view="categories" class="admin-view" hidden>
-      <div class="admin-toolbar">
-        <h3 style="flex:1; font-size:1.1rem; font-weight:700;">Manage Categories</h3>
-        <button class="btn btn-primary btn-sm" id="newCategoryBtn">
-          <i class="fa-solid fa-plus"></i> New Category
-        </button>
-      </div>
-      <div class="panel">
-        <div id="categoriesList">
-          <!-- Categories list will be injected here -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. ORDERS VIEW -->
-    <section data-view="orders" class="admin-view" hidden>
-      <div class="admin-toolbar">
-        <input id="orderSearch" placeholder="Search orders by name or phone…" type="search" style="max-width: 300px;">
-        <select id="orderStatusFilter" style="max-width: 200px;">
-          <option value="">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
-      <div class="panel">
-        <div id="ordersList">
-          <!-- Orders list will be injected here -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. USERS VIEW -->
-    <section data-view="users" class="admin-view" hidden>
-      <div class="panel">
-        <div class="panel-head"><h2><i class="fa-solid fa-users"></i> Registered Users</h2></div>
-        <div id="usersList">
-          <!-- Users list will be injected here -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. SETTINGS VIEW -->
-    <section data-view="settings" class="admin-view" hidden>
-      <div class="panel">
-        <div class="panel-head"><h2><i class="fa-solid fa-store"></i> Store & Support Settings</h2></div>
-        <div class="panel-body">
-          <form id="settingsForm">
-            
-            <div class="grid-2">
-              <div class="field">
-                <label>Store Name</label>
-                <input id="sStoreName" maxlength="80" placeholder="e.g. AppVerse">
-              </div>
-              <div class="field">
-                <label>Support Email</label>
-                <input id="sEmail" type="email" maxlength="120" placeholder="support@appverse.com">
-              </div>
-            </div>
-
-            <div class="field">
-              <label>Support Phone (For Live Chat / WhatsApp)</label>
-              <input id="sPhone" maxlength="30" placeholder="01XXXXXXXXX">
-            </div>
-
-            <hr style="margin:24px 0; border:0; border-top:1px solid var(--border);">
-            <h3 style="font-size:1.1rem; margin-bottom:16px; font-weight:700;"><i class="fa-solid fa-money-bill" style="color:var(--primary);"></i> Payment Methods</h3>
-            
-            <div class="grid-2">
-               <div class="field">
-                 <label>bKash Number</label>
-                 <input id="sBkash" maxlength="30" placeholder="01XXXXXXXXX">
-               </div>
-               <div class="field">
-                 <label>bKash QR Code Image URL</label>
-                 <input id="sBkashQr" type="url" placeholder="https://…">
-               </div>
-            </div>
-
-            <div class="grid-2">
-               <div class="field">
-                 <label>Nagad Number</label>
-                 <input id="sNagad" maxlength="30" placeholder="01XXXXXXXXX">
-               </div>
-               <div class="field">
-                 <label>Nagad QR Code Image URL</label>
-                 <input id="sNagadQr" type="url" placeholder="https://…">
-               </div>
-            </div>
-
-            <div class="grid-2">
-               <div class="field">
-                 <label>Rocket Number</label>
-                 <input id="sRocket" maxlength="30" placeholder="01XXXXXXXXX">
-               </div>
-               <div class="field">
-                 <label>Rocket QR Code Image URL</label>
-                 <input id="sRocketQr" type="url" placeholder="https://…">
-               </div>
-            </div>
-
-            <hr style="margin:24px 0; border:0; border-top:1px solid var(--border);">
-            <h3 style="font-size:1.1rem; margin-bottom:16px; font-weight:700;"><i class="fa-brands fa-telegram" style="color:#229ED9;"></i> Telegram Notification Integration</h3>
-            
-            <div class="grid-2">
-              <div class="field">
-                <label>Telegram Bot Token</label>
-                <input id="sTelegramToken" placeholder="e.g. 123456:ABC-DEF...">
-                <small class="hint">Get it from @BotFather</small>
-              </div>
-              <div class="field">
-                <label>Telegram Chat ID</label>
-                <input id="sTelegramChat" placeholder="e.g. -1004322135682">
-                <small class="hint">Get it from @userinfobot</small>
-              </div>
-            </div>
-
-            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
-              <button class="btn btn-primary" type="submit" style="flex:1; min-width:200px;">
-                <i class="fa-solid fa-floppy-disk"></i> Save All Settings
-              </button>
-              <!-- Test Button -->
-              <button type="button" class="btn btn-ghost" id="testTelegramBtn" style="flex:1; min-width:200px; border-color:var(--primary); color:var(--primary);">
-                <i class="fa-brands fa-telegram"></i> Test Telegram Notification
-              </button>
-            </div>
-
-          </form>
-        </div>
-      </div>
-    </section>
-
-  </main>
-</div>
-
-<!-- ================= MODALS ================= -->
-
-<!-- PRODUCT EDITOR MODAL -->
-<div class="modal" id="productModal" hidden>
-  <div class="modal-backdrop" data-close="productModal"></div>
-  <div class="modal-panel wide">
-    <button class="modal-close" data-close="productModal"><i class="fa-solid fa-xmark"></i></button>
-    <h3 class="modal-title" id="productModalTitle"><i class="fa-solid fa-box"></i> New Product</h3>
-    <form id="productForm">
-      <input type="hidden" id="pId">
-      
-      <div class="grid-2">
-        <div class="field">
-          <label>Name <span class="req">*</span></label>
-          <input id="pName" required maxlength="200" placeholder="App Name">
-        </div>
-        <div class="field">
-          <label>Category <span class="req">*</span></label>
-          <select id="pCategory" required><option value="">Select Category…</option></select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Description <span class="req">*</span></label>
-        <textarea id="pDescription" required maxlength="4000" rows="4" placeholder="Describe your app features..."></textarea>
-      </div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label>Price (৳) <span class="req">*</span></label>
-          <input id="pPrice" type="number" min="0" step="0.01" required placeholder="0">
-        </div>
-        <div class="field">
-          <label>Original Price (৳)</label>
-          <input id="pOriginalPrice" type="number" min="0" step="0.01" placeholder="Leave blank for no discount">
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Main Image / Logo URL <span class="req">*</span></label>
-        <input id="pImageUrl" type="url" required placeholder="https://…">
-      </div>
-
-      <div class="field">
-        <label>Extra Screenshot URLs (one per line)</label>
-        <textarea id="pScreenshots" rows="3" placeholder="https://…&#10;https://…"></textarea>
-      </div>
-
-      <div class="row" style="gap:24px; margin:16px 0;">
-        <label class="switch"><input type="checkbox" id="pFeatured"><span class="track"></span> Featured App</label>
-        <label class="switch"><input type="checkbox" id="pAvailable" checked><span class="track"></span> Available</label>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn btn-ghost" type="button" data-close="productModal">Cancel</button>
-        <button class="btn btn-primary" type="submit" id="saveProductBtn"><i class="fa-solid fa-floppy-disk"></i> Save Product</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- CATEGORY MODAL -->
-<div class="modal" id="categoryModal" hidden>
-  <div class="modal-backdrop" data-close="categoryModal"></div>
-  <div class="modal-panel">
-    <button class="modal-close" data-close="categoryModal"><i class="fa-solid fa-xmark"></i></button>
-    <h3 class="modal-title" id="categoryModalTitle"><i class="fa-solid fa-tag"></i> New Category</h3>
-    <form id="categoryForm">
-      <input type="hidden" id="cId">
-      <div class="field">
-        <label>Category Name <span class="req">*</span></label>
-        <input id="cName" required maxlength="80" placeholder="e.g. Business Apps">
-      </div>
-      <div class="field">
-        <label>Slug <span class="req">*</span></label>
-        <input id="cSlug" required maxlength="80" placeholder="business-apps">
-        <small class="hint">Lowercase, no spaces (e.g. business)</small>
-      </div>
-      <label class="switch" style="margin-bottom:20px;"><input type="checkbox" id="cActive" checked><span class="track"></span> Active</label>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" type="button" data-close="categoryModal">Cancel</button>
-        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Category</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- ORDER DETAIL MODAL -->
-<div class="modal" id="orderDetailModal" hidden>
-  <div class="modal-backdrop" data-close="orderDetailModal"></div>
-  <div class="modal-panel">
-    <button class="modal-close" data-close="orderDetailModal"><i class="fa-solid fa-xmark"></i></button>
-    <div id="orderDetailBody"></div>
-  </div>
-</div>
-
-<!-- CONFIRM MODAL -->
-<div class="modal" id="confirmModal" hidden>
-  <div class="modal-backdrop" data-close="confirmModal"></div>
-  <div class="modal-panel">
-    <h3 class="modal-title" id="confirmTitle" style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Are you sure?</h3>
-    <p id="confirmMsg" class="muted" style="margin-bottom:24px;"></p>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="confirmNo">Cancel</button>
-      <button class="btn btn-danger" id="confirmYes" style="background:var(--danger); color:#fff;">Yes, Proceed</button>
+  <!-- Products (Hidden) -->
+  <section data-view="products" hidden>
+    <div class="panel">
+      <div class="panel-head">All Products <button class="btn btn-primary" style="padding:6px 12px; font-size:0.8rem;" onclick="alert('Add Product Form')">+ Add New</button></div>
+      <div id="adminProductsList"></div>
     </div>
-  </div>
+  </section>
+
+  <!-- Orders (Hidden) -->
+  <section data-view="orders" hidden>
+    <div class="panel"><div class="panel-head">All Orders</div><div id="adminOrdersList"></div></div>
+  </section>
+
+  <!-- Users (Hidden) -->
+  <section data-view="users" hidden>
+    <div class="panel"><div class="panel-head">Registered Users</div><div id="adminUsersList"></div></div>
+  </section>
+
+  <!-- Settings (Hidden) -->
+  <section data-view="settings" hidden>
+    <div class="panel">
+      <div class="panel-head">Telegram & Store Settings</div>
+      <div class="panel-body">
+        <form id="settingsForm">
+          <div class="field"><label>Telegram Bot Token</label><input id="tgToken"></div>
+          <div class="field"><label>Telegram Chat ID</label><input id="tgChat"></div>
+          <button class="btn btn-primary btn-block" type="submit">Save Settings</button>
+        </form>
+      </div>
+    </div>
+  </section>
 </div>
 
-<!-- ADMIN LOGIN OVERLAY -->
-<div class="modal" id="loginModal" hidden>
-  <div class="modal-backdrop"></div>
-  <div class="modal-panel" style="max-width:420px; margin:auto; border-radius:20px;">
-    <a class="brand" href="index.html" style="justify-content:center; margin-bottom:24px;">
-      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
-      <span class="brand-text">App<strong>Verse</strong></span>
-    </a>
-    <h3 class="modal-title" style="justify-content:center; font-size:1.4rem;"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> Admin Login</h3>
-    <p class="muted" style="text-align:center; margin-bottom:20px; font-size:0.9rem;">Authorized personnel only</p>
-    
-    <div class="alert alert-danger" id="loginErr" hidden></div>
-    
-    <form id="adminLoginForm">
-      <div class="field">
-        <label>Admin Email</label>
-        <input id="adminEmailInput" type="email" required autocomplete="email" placeholder="admin@example.com">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input id="adminPasswordInput" type="password" required autocomplete="current-password" placeholder="••••••••">
-      </div>
-      <button class="btn btn-primary btn-block btn-lg" type="submit" id="adminLoginBtn" style="margin-top:10px;">
-        <i class="fa-solid fa-right-to-bracket"></i> Secure Sign In
-      </button>
-    </form>
-    <p style="text-align:center; margin-top:20px; font-size:0.85rem;">
-      <a href="index.html" style="color:var(--muted);">← Back to Store</a>
-    </p>
-  </div>
-</div>
-
-<div class="toast-stack" id="toasts"></div>
-
-<!-- Script -->
 <script type="module" src="admin.js"></script>
 </body>
 </html>
