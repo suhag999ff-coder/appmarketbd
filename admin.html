@@ -3,71 +3,419 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Admin Panel · AppVerse</title>
+<meta name="theme-color" content="#4f46e5">
+<title>Admin · AppVerse</title>
+<script src="theme.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="admin-body">
 
-<!-- Sidebar -->
+<!-- SIDEBAR -->
 <aside class="admin-sidebar" id="adminSidebar">
-  <a class="brand" href="index.html" style="margin-bottom: 20px;"><span class="brand-mark"><i class="fa-solid fa-cube"></i></span><span class="brand-text">App<strong>Verse</strong></span></a>
+  <a class="brand" href="index.html">
+    <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+    <span class="brand-text">App<strong>Verse</strong></span>
+  </a>
+  <span class="admin-badge">ADMIN</span>
   <nav class="admin-nav">
-    <button data-view="dashboard" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</button>
+    <button data-view="dashboard" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
     <button data-view="products"><i class="fa-solid fa-box"></i> Products</button>
+    <button data-view="categories"><i class="fa-solid fa-tags"></i> Categories</button>
     <button data-view="orders"><i class="fa-solid fa-receipt"></i> Orders</button>
     <button data-view="users"><i class="fa-solid fa-users"></i> Users</button>
     <button data-view="settings"><i class="fa-solid fa-gear"></i> Settings</button>
-    <button id="adminLogout" style="color:var(--danger); margin-top:20px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    <button id="adminLogout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
   </nav>
 </aside>
+<div class="admin-sidebar-backdrop" id="sidebarBackdrop" hidden></div>
 
-<!-- Main Content -->
-<div class="admin-main">
-  <header class="admin-topbar">
-    <button id="menuBtn" style="font-size:1.2rem;"><i class="fa-solid fa-bars"></i></button>
-    <h2 id="pageTitle" style="font-size:1.1rem; flex:1;">Dashboard</h2>
-  </header>
+<!-- TOP BAR -->
+<header class="admin-topbar">
+  <button class="admin-menu-btn" id="menuBtn" aria-label="Menu">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+  <h1 id="pageTitle">Dashboard</h1>
+  <button class="header-icon" data-theme-toggle aria-label="Toggle theme">
+    <i class="fa-solid fa-moon"></i>
+  </button>
+  <span class="muted small" id="adminEmail" style="margin-right:8px"></span>
+</header>
+
+<!-- CONTENT -->
+<main class="admin-content">
 
   <!-- Dashboard -->
-  <section data-view="dashboard">
-    <div class="stat-grid" id="statGrid"></div>
-    <div class="panel"><div class="panel-head">Recent Orders</div><div id="recentOrders"></div></div>
-  </section>
-
-  <!-- Products (Hidden) -->
-  <section data-view="products" hidden>
+  <section data-view="dashboard" class="admin-view">
+    <div class="stat-grid" id="statGrid">
+      <div class="stat-card"><span class="stat-label">Loading</span><span class="stat-value">—</span></div>
+    </div>
     <div class="panel">
-      <div class="panel-head">All Products <button class="btn btn-primary" style="padding:6px 12px; font-size:0.8rem;" onclick="alert('Add Product Form')">+ Add New</button></div>
-      <div id="adminProductsList"></div>
+      <div class="panel-head"><h2><i class="fa-solid fa-clock"></i> Recent orders</h2></div>
+      <div class="panel-body" id="recentOrders"></div>
     </div>
   </section>
 
-  <!-- Orders (Hidden) -->
-  <section data-view="orders" hidden>
-    <div class="panel"><div class="panel-head">All Orders</div><div id="adminOrdersList"></div></div>
+  <!-- Products -->
+  <section data-view="products" class="admin-view" hidden>
+    <div class="admin-toolbar">
+      <input id="productSearch" placeholder="Search products…" type="search">
+      <button class="btn btn-primary btn-sm" id="newProductBtn">
+        <i class="fa-solid fa-plus"></i> New product
+      </button>
+    </div>
+    <div class="panel"><div id="productsList"></div></div>
   </section>
 
-  <!-- Users (Hidden) -->
-  <section data-view="users" hidden>
-    <div class="panel"><div class="panel-head">Registered Users</div><div id="adminUsersList"></div></div>
+  <!-- Categories -->
+  <section data-view="categories" class="admin-view" hidden>
+    <div class="admin-toolbar">
+      <h3 style="flex:1;font-size:1rem">Manage Categories</h3>
+      <button class="btn btn-primary btn-sm" id="newCategoryBtn">
+        <i class="fa-solid fa-plus"></i> New category
+      </button>
+    </div>
+    <div class="panel"><div id="categoriesList"></div></div>
   </section>
 
-  <!-- Settings (Hidden) -->
-  <section data-view="settings" hidden>
+  <!-- Orders -->
+  <section data-view="orders" class="admin-view" hidden>
+    <div class="admin-toolbar">
+      <input id="orderSearch" placeholder="Search orders…" type="search">
+      <select id="orderStatusFilter">
+        <option value="">All statuses</option>
+        <option value="pending">Pending</option>
+        <option value="payment_submitted">Payment submitted</option>
+        <option value="under_review">Under review</option>
+        <option value="payment_verified">Payment verified</option>
+        <option value="delivered">Delivered</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+        <option value="refunded">Refunded</option>
+      </select>
+    </div>
+    <div class="panel"><div id="ordersList"></div></div>
+  </section>
+
+  <!-- Users -->
+  <section data-view="users" class="admin-view" hidden>
     <div class="panel">
-      <div class="panel-head">Telegram & Store Settings</div>
+      <div class="panel-head">
+        <h2><i class="fa-solid fa-users"></i> Users & Admin Access</h2>
+      </div>
+      <div class="panel-body" id="usersList"></div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section data-view="settings" class="admin-view" hidden>
+
+    <!-- Store & Support -->
+    <div class="panel">
+      <div class="panel-head"><h2><i class="fa-solid fa-store"></i> Store & Support</h2></div>
       <div class="panel-body">
-        <form id="settingsForm">
-          <div class="field"><label>Telegram Bot Token</label><input id="tgToken"></div>
-          <div class="field"><label>Telegram Chat ID</label><input id="tgChat"></div>
-          <button class="btn btn-primary btn-block" type="submit">Save Settings</button>
+        <form id="storeSettingsForm">
+          <div class="field">
+            <label>Store Name</label>
+            <input id="sStoreName" maxlength="80" value="AppVerse">
+          </div>
+          <div class="field">
+            <label>Support Phone (Live chat / WhatsApp)</label>
+            <input id="sPhone" maxlength="30" placeholder="01XXXXXXXXX">
+          </div>
+          <div class="field">
+            <label>Support Email</label>
+            <input id="sEmail" type="email" maxlength="120">
+          </div>
+
+          <hr style="margin:20px 0;border:0;border-top:1px solid var(--border)">
+          <h3 style="font-size:1rem;margin-bottom:14px"><i class="fa-solid fa-money-bill"></i> Payment Numbers</h3>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>bKash Number</label>
+              <input id="sBkash" maxlength="30" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="field">
+              <label>bKash QR Image URL</label>
+              <input id="sBkashQr" type="url" placeholder="https://…">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label>Nagad Number</label>
+              <input id="sNagad" maxlength="30" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="field">
+              <label>Nagad QR Image URL</label>
+              <input id="sNagadQr" type="url" placeholder="https://…">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label>Rocket Number</label>
+              <input id="sRocket" maxlength="30" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="field">
+              <label>Rocket QR Image URL</label>
+              <input id="sRocketQr" type="url" placeholder="https://…">
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block btn-lg" type="submit" style="margin-top:10px">
+            <i class="fa-solid fa-floppy-disk"></i> Save Store Settings
+          </button>
         </form>
       </div>
     </div>
+
+    <!-- Telegram Integration -->
+    <div class="panel">
+      <div class="panel-head"><h2><i class="fa-brands fa-telegram"></i> Telegram Bot Integration</h2></div>
+      <div class="panel-body">
+        <div class="alert alert-info">
+          <i class="fa-solid fa-circle-info"></i>
+          <div>
+            <strong>How to get these:</strong><br>
+            • <b>Bot Token</b> — open Telegram, message <code>@BotFather</code>, send <code>/newbot</code>, follow steps.<br>
+            • <b>Chat ID</b> — add your bot to a group, then message <code>@userinfobot</code> in that group to get the ID (starts with <code>-</code> for groups).
+          </div>
+        </div>
+
+        <form id="telegramForm">
+          <div class="field">
+            <label>Telegram Bot Token</label>
+            <div class="secret-input-wrap">
+              <input id="sTelegramToken" type="password" placeholder="123456:ABC-DEF..." autocomplete="off">
+              <button type="button" class="secret-toggle" data-target="sTelegramToken">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+            <small class="hint">Stored securely in Firestore — only admins can read.</small>
+          </div>
+          <div class="field">
+            <label>Telegram Chat ID</label>
+            <input id="sTelegramChat" placeholder="e.g. -1004322135682 or your user ID">
+            <small class="hint">For groups/channels, prepend with <code>-100</code>.</small>
+          </div>
+
+          <div class="row" style="gap:10px;margin-top:14px">
+            <button class="btn btn-primary" type="submit" style="flex:1">
+              <i class="fa-solid fa-floppy-disk"></i> Save Token
+            </button>
+            <button class="btn btn-ghost" type="button" id="testTelegramBtn" style="flex:1">
+              <i class="fa-solid fa-paper-plane"></i> Send Test
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </section>
+
+</main>
+
+<!-- PRODUCT EDITOR MODAL -->
+<div class="modal" id="productModal" hidden>
+  <div class="modal-backdrop" data-close="productModal"></div>
+  <div class="modal-panel wide">
+    <button class="modal-close" data-close="productModal"><i class="fa-solid fa-xmark"></i></button>
+    <h3 class="modal-title" id="productModalTitle"><i class="fa-solid fa-box"></i> New product</h3>
+    <form id="productForm">
+      <input type="hidden" id="pId">
+
+      <div class="field">
+        <label>Name <span class="req">*</span></label>
+        <input id="pName" required maxlength="200">
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Developer / Publisher</label>
+          <input id="pDeveloper" maxlength="120" placeholder="e.g. Studio X">
+        </div>
+        <div class="field">
+          <label>Category <span class="req">*</span></label>
+          <select id="pCategory" required><option value="">Select…</option></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Description <span class="req">*</span></label>
+        <textarea id="pDescription" required maxlength="4000" rows="3"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Main image / icon URL <span class="req">*</span></label>
+        <input id="pImageUrl" type="url" required placeholder="https://…">
+      </div>
+
+      <div class="field">
+        <label>Extra screenshot URLs (one per line)</label>
+        <textarea id="pScreenshots" rows="2" placeholder="https://…&#10;https://…"></textarea>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Version</label>
+          <input id="pVersion" maxlength="40" placeholder="1.0.0">
+        </div>
+        <div class="field">
+          <label>Platform</label>
+          <input id="pPlatform" maxlength="60" placeholder="Android / iOS / Web">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>File size</label>
+          <input id="pFileSize" maxlength="30" placeholder="e.g. 25 MB">
+        </div>
+        <div class="field">
+          <label>Tags (comma separated)</label>
+          <input id="pTags" maxlength="200" placeholder="productivity, tools">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Price (৳) <span class="req">*</span></label>
+          <input id="pPrice" type="number" min="0" step="0.01" required>
+        </div>
+        <div class="field">
+          <label>Original price (৳)</label>
+          <input id="pOriginalPrice" type="number" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Features (one per line)</label>
+        <textarea id="pFeatures" rows="2" placeholder="Dark mode&#10;Cloud sync"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Requirements</label>
+        <textarea id="pRequirements" rows="2" placeholder="Android 8.0+, 2GB RAM"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Changelog</label>
+        <textarea id="pChangelog" rows="2" placeholder="v1.0.1 — fixed bug"></textarea>
+      </div>
+
+      <div class="field">
+        <label><i class="fa-solid fa-lock"></i> Private download URL <small class="muted">(only owners see)</small></label>
+        <input id="pDownloadUrl" type="url" placeholder="https://…">
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>SEO title</label>
+          <input id="pSeoTitle" maxlength="120">
+        </div>
+        <div class="field">
+          <label>SEO description</label>
+          <input id="pSeoDescription" maxlength="200">
+        </div>
+      </div>
+
+      <div class="row" style="gap:20px;margin:6px 0 14px">
+        <label class="switch"><input type="checkbox" id="pFeatured"><span class="track"></span> Featured</label>
+        <label class="switch"><input type="checkbox" id="pAvailable" checked><span class="track"></span> Available</label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close="productModal">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="saveProductBtn"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+      </div>
+    </form>
+  </div>
 </div>
 
+<!-- CATEGORY MODAL -->
+<div class="modal" id="categoryModal" hidden>
+  <div class="modal-backdrop" data-close="categoryModal"></div>
+  <div class="modal-panel">
+    <button class="modal-close" data-close="categoryModal"><i class="fa-solid fa-xmark"></i></button>
+    <h3 class="modal-title" id="categoryModalTitle"><i class="fa-solid fa-tag"></i> New category</h3>
+    <form id="categoryForm">
+      <input type="hidden" id="cId">
+      <div class="field">
+        <label>Name <span class="req">*</span></label>
+        <input id="cName" required maxlength="80" placeholder="e.g. Business">
+      </div>
+      <div class="field">
+        <label>Slug <span class="req">*</span></label>
+        <input id="cSlug" required maxlength="80" placeholder="business">
+        <small class="hint">Lowercase, no spaces</small>
+      </div>
+      <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="cActive" checked><span class="track"></span> Active</label>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close="categoryModal">Cancel</button>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="modal" id="orderDetailModal" hidden>
+  <div class="modal-backdrop" data-close="orderDetailModal"></div>
+  <div class="modal-panel">
+    <button class="modal-close" data-close="orderDetailModal"><i class="fa-solid fa-xmark"></i></button>
+    <div id="orderDetailBody"></div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal" id="confirmModal" hidden>
+  <div class="modal-backdrop" data-close="confirmModal"></div>
+  <div class="modal-panel">
+    <h3 class="modal-title" id="confirmTitle">Are you sure?</h3>
+    <p id="confirmMsg" class="muted"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirmNo">Cancel</button>
+      <button class="btn btn-danger" id="confirmYes">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div class="modal" id="loginModal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel">
+    <a class="brand" href="index.html" style="justify-content:center;margin-bottom:20px">
+      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+      <span class="brand-text">App<strong>Verse</strong></span>
+    </a>
+    <h3 class="modal-title" style="justify-content:center"><i class="fa-solid fa-shield-halved"></i> Admin sign in</h3>
+    <div class="alert alert-danger" id="loginErr" hidden></div>
+    <form id="adminLoginForm">
+      <div class="field">
+        <label>Email</label>
+        <input id="adminEmailInput" type="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="adminPasswordInput" type="password" required autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" type="submit" id="adminLoginBtn">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign in
+      </button>
+    </form>
+
+    <div class="bootstrap-box">
+      <p class="muted small"><i class="fa-solid fa-lightbulb"></i> <strong>First-time admin?</strong></p>
+      <p class="muted small" style="margin-bottom:10px">Sign in above (or register on the storefront first). Then click below — only works if no admin exists yet.</p>
+      <button class="btn btn-ghost btn-block btn-sm" type="button" id="claimAdminBtn">
+        <i class="fa-solid fa-shield-halved"></i> Claim admin access
+      </button>
+    </div>
+
+    <p class="auth-foot"><a href="index.html">← Back to storefront</a></p>
+  </div>
+</div>
+
+<div class="toast-stack" id="toasts"></div>
 <script type="module" src="admin.js"></script>
 </body>
 </html>
