@@ -7,72 +7,46 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 </head>
-<body id="accountPage">
+<body id="accountPage" style="padding-bottom: 80px;">
 
 <header class="site-header">
-  <div class="container header-inner">
-    <a class="brand" href="index.html">
-      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
-      <span class="brand-text">App<strong>Verse</strong></span>
-    </a>
-    <div class="spacer"></div>
-    <a class="btn btn-ghost btn-sm" href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+  <div class="header-inner">
+    <a class="brand" href="index.html"><span class="brand-mark"><i class="fa-solid fa-cube"></i></span><span class="brand-text">App<strong>Verse</strong></span></a>
   </div>
 </header>
 
 <section class="section">
-  <div class="container">
-    <div style="background:#fff;border:1px solid var(--border);border-radius:20px;padding:20px;text-align:center;margin-bottom:20px">
-      <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;display:grid;place-items:center;font-size:1.8rem;font-weight:700;margin:0 auto 12px" id="accInitial">U</div>
-      <h2 id="accName" style="font-size:1.2rem">Loading…</h2>
-      <p class="muted small" id="accEmail"></p>
-    </div>
+  <div class="balance-card">
+    <h3>My Wallet Balance</h3>
+    <div class="amount" id="accBalance">৳0</div>
+  </div>
 
-    <div class="panel">
-      <div class="panel-head"><h2><i class="fa-solid fa-user-pen"></i> Edit profile</h2></div>
-      <div class="panel-body">
-        <form id="profileForm">
-          <div class="field">
-            <label>Display name</label>
-            <input id="editName" maxlength="80" required>
-          </div>
-          <div class="field">
-            <label>Phone</label>
-            <input id="editPhone" type="tel" maxlength="30" placeholder="01XXXXXXXXX">
-          </div>
-          <div class="field">
-            <label>Address</label>
-            <textarea id="editAddress" maxlength="300" rows="2"></textarea>
-          </div>
-          <button class="btn btn-primary btn-block" type="submit">
-            <i class="fa-solid fa-floppy-disk"></i> Save changes
-          </button>
-        </form>
-      </div>
-    </div>
+  <div style="text-align:center; margin-bottom: 24px;">
+    <h2 id="accName" style="font-size:1.4rem; margin-bottom:4px;">Loading...</h2>
+    <p id="accEmail" style="color:var(--muted); font-size:0.9rem;"></p>
+  </div>
 
-    <div class="panel">
-      <div class="panel-head"><h2><i class="fa-solid fa-gear"></i> Quick links</h2></div>
-      <div class="panel-body">
-        <a class="btn btn-ghost btn-block" href="orders.html" style="margin-bottom:10px">
-          <i class="fa-solid fa-receipt"></i> My orders
-        </a>
-        <a class="btn btn-ghost btn-block" href="#" id="logoutBtn" style="color:var(--danger)">
-          <i class="fa-solid fa-right-from-bracket"></i> Sign out
-        </a>
-      </div>
+  <div class="panel">
+    <div class="panel-head">Edit Profile</div>
+    <div class="panel-body">
+      <form id="profileForm">
+        <div class="field"><label>Name</label><input id="editName"></div>
+        <div class="field"><label>Phone</label><input id="editPhone" placeholder="01XXXXXXXXX"></div>
+        <div class="field"><label>Address</label><textarea id="editAddress" rows="2"></textarea></div>
+        <button class="btn btn-primary btn-block" type="submit"><i class="fa-solid fa-save"></i> Save Changes</button>
+      </form>
     </div>
   </div>
+
+  <button class="btn btn-block" id="logoutBtn" style="background:#fee2e2; color:#ef4444; margin-top:20px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
 </section>
 
 <nav class="bottom-nav">
-  <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-  <a href="index.html#browse"><i class="fa-solid fa-magnifying-glass"></i><span>Browse</span></a>
-  <a href="orders.html"><i class="fa-solid fa-receipt"></i><span>Orders</span></a>
-  <a href="account.html" class="active"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  <a href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+  <a href="orders.html"><i class="fa-solid fa-receipt"></i>Orders</a>
+  <a href="account.html" class="active"><i class="fa-solid fa-user"></i>Account</a>
 </nav>
 
-<div class="toast-stack" id="toasts"></div>
 <script type="module" src="auth.js"></script>
 </body>
 </html>
