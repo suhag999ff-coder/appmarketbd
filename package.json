@@ -1,10 +1,11 @@
 {
-  "name": "appverse",
+  "name": "appverse-functions",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "serve": "npx --yes serve -l 5173 .",
-    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes"
-  },
-  "engines": { "node": ">=18" }
+  "main": "index.js",
+  "engines": { "node": "20" },
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^5.0.1"
+  }
 }
