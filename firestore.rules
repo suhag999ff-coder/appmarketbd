@@ -10,7 +10,7 @@ service cloud.firestore {
     }
     function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
 
-    // ── Users ─────────────────────────────────────────────
+    // Users
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
       allow create: if isOwner(uid) && request.resource.data.uid == uid;
@@ -20,30 +20,30 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ── Admins (write via Cloud Function / console only) ──
+    // Admins — read self, write only via Cloud Function (admin SDK bypasses rules)
     match /admins/{uid} {
       allow get: if isSignedIn() && request.auth.uid == uid;
-      allow list: if false;
-      allow write: if false;
+      allow list: if isAdmin();
+      allow write: if false; // Cloud Function handles this
     }
 
-    // ── Products (public read, admin write) ───────────────
+    // Products
     match /products/{id} {
       allow read: if true;
       allow write: if isAdmin();
       match /private/{docId} {
-        allow read: if isAdmin();
+        allow read: if isAdmin(); // Only admin reads directly; users get URLs via Cloud Function
         allow write: if isAdmin();
       }
     }
 
-    // ── Categories ────────────────────────────────────────
+    // Categories
     match /categories/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // ── Orders ────────────────────────────────────────────
+    // Orders
     match /orders/{id} {
       allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow create: if isSignedIn() &&
@@ -57,13 +57,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ── Settings (public doc readable by all, private admin-only)
+    // Settings — public doc readable by all, secrets only admin
     match /settings/{docId} {
       allow read: if docId == 'public' || isAdmin();
       allow write: if isAdmin();
     }
 
-    // ── Audit logs ────────────────────────────────────────
+    // Audit logs
     match /auditLogs/{id} {
       allow read, write: if isAdmin();
     }
