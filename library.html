@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Library · AppVerse</title>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"><i class="fa-solid fa-cube"></i></span>
+      <span class="brand-text">App<strong>Verse</strong></span>
+    </a>
+    <div class="spacer"></div>
+    <button class="header-icon" data-theme-toggle aria-label="Toggle theme">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+    <a class="header-icon" href="index.html"><i class="fa-solid fa-house"></i></a>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h2><i class="fa-solid fa-download"></i> My Library</h2></div>
+    <p class="muted small" style="margin-bottom:16px">Apps you've purchased and received.</p>
+    <div id="libraryList"></div>
+    <div class="empty-state" id="libraryEmpty" hidden>
+      <i class="fa-regular fa-folder-open"></i>
+      <h3>Your library is empty</h3>
+      <p>Purchase an app to see it here after admin verification.</p>
+      <a class="btn btn-primary" href="index.html" style="margin-top:12px">
+        <i class="fa-solid fa-compass"></i> Browse apps
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="toast-stack" id="toasts"></div>
+<script type="module" src="library.js"></script>
+</body>
+</html>
